@@ -9,7 +9,7 @@ import './global.css'
 createRoot(document.getElementById('root')!).render(
   <HelmetProvider>
     <StrictMode>
-      <Helmet titleTemplate="%s | ViteSpark" />
+      <Helmet titleTemplate="%s | BellaPizza" />
       <BrowserRouter>
         <App />
       </BrowserRouter>
