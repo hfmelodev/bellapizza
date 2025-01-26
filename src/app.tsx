@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import { AppLayout } from './_layouts/app'
 import { AuthLayout } from './_layouts/auth'
+import { Orders } from './components/app/orders'
 import { NotFound } from './not-found'
 import { Home } from './pages/home'
 import { SignIn } from './pages/sign-in'
@@ -11,6 +12,7 @@ export function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Home />} />
+        <Route path="orders" element={<Orders />} />
       </Route>
 
       <Route path="sign-in" element={<AuthLayout />}>
