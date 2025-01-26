@@ -29,6 +29,9 @@
 			},
 			"a11y": {
 				"useValidAnchor": "off"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off"
 			}
 		}
 	},

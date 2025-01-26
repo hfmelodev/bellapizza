@@ -1,15 +1,13 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { ArrowRight, Search, X } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
+import { OrderTableFilter } from './order-table-filter'
+import { OrderTableRow } from './order-table-row'
 
 export function Orders() {
   return (
@@ -19,10 +17,8 @@ export function Orders() {
       <h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
 
       <div className="space-y-2.5">
-        <form className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Filtros:</span>
-          <Input placeholder="Nome do cliente" className="h-8 w-[320px]" />
-        </form>
+        {/* Componente de filtro */}
+        <OrderTableFilter />
 
         <div className="rounded-md border">
           <Table>
@@ -41,54 +37,8 @@ export function Orders() {
 
             <TableBody>
               {Array.from({ length: 10 }).map((_, i) => {
-                return (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Button variant="outline" size="xs">
-                        <Search className="size-3" />
-                        <span className="sr-only">Detalhes do pedido</span>
-                      </Button>
-                    </TableCell>
-
-                    <TableCell className="font-mono text-xs font-medium">
-                      821e78f7asdhdf128h
-                    </TableCell>
-
-                    <TableCell className="text-muted-foreground">
-                      há 15 minutos
-                    </TableCell>
-
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="size-2 rounded-full bg-slate-400" />
-                        <span className="font-medium text-muted-foreground">
-                          Pendente
-                        </span>
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="font-medium">
-                      Hilquias Ferreira Melo
-                    </TableCell>
-
-                    <TableCell className="font-medium">R$ 149,90</TableCell>
-
-                    <TableCell>
-                      <Button variant="outline" size="xs">
-                        <ArrowRight className="size-3" />
-                        Aprovar
-                      </Button>
-                    </TableCell>
-
-                    <TableCell>
-                      <Button variant="ghost" size="xs">
-                        <X className="size-3" />
-                        Cancelar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                )
+                // Componente com a lista de pedidos
+                return <OrderTableRow key={i} />
               })}
             </TableBody>
           </Table>
