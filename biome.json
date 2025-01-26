@@ -26,6 +26,9 @@
 			"recommended": true,
 			"style": {
 				"noNonNullAssertion": "off"
+			},
+			"a11y": {
+				"useValidAnchor": "off"
 			}
 		}
 	},
