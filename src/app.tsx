@@ -11,7 +11,6 @@ export function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Home />} />
-        {/* <Route path="mypage" element={<h1>MyPage</h1>} /> */}
       </Route>
 
       <Route path="sign-in" element={<AuthLayout />}>
