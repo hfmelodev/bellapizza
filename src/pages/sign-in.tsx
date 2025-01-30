@@ -5,9 +5,11 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { singIn } from '@/api/sign-in'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useMutation } from '@tanstack/react-query'
 
 const signInFormSchema = z.object({
   email: z.string().email({
@@ -26,9 +28,22 @@ export function SignIn() {
     resolver: zodResolver(signInFormSchema),
   })
 
-  function handleSubmitForm(data: SignInFormType) {
-    console.log(data)
-    toast.success('Login realizado com sucesso!')
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: singIn,
+  })
+
+  async function handleSubmitForm(data: SignInFormType) {
+    try {
+      await authenticate({
+        email: data.email,
+      })
+
+      toast.success('Enviamos um link de autenticação para seu e-mail.')
+    } catch (error) {
+      toast.error('Algo deu errado, tente novamente.')
+
+      console.log(error)
+    }
   }
 
   return (
