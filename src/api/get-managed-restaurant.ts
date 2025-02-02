@@ -1,6 +1,6 @@
 import { API } from '@/lib/axios'
 
-interface GetManagedRestaurantFormType {
+export interface GetManagedRestaurantFormType {
   id: string
   name: string
   createdAt: Date | null

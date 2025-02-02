@@ -1,4 +1,7 @@
-import { getManagedRestaurant } from '@/api/get-managed-restaurant'
+import {
+  type GetManagedRestaurantFormType,
+  getManagedRestaurant,
+} from '@/api/get-managed-restaurant'
 import { updateProfile } from '@/api/update-profile'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { LoaderPinwheel } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -49,8 +52,27 @@ export function StoreProfileDialog() {
     },
   })
 
+  const queryClient = useQueryClient()
   const { mutateAsync: updateProfileFn } = useMutation({
     mutationFn: updateProfile,
+    onSuccess(_, { name, description }) {
+      // Busca os dados que estavam no cache antes da atualização
+      const cached = queryClient.getQueryData<GetManagedRestaurantFormType>([
+        'managed-restaurant',
+      ])
+
+      if (cached) {
+        // Atualiza o cache da query "managed-restaurant"
+        queryClient.setQueryData<GetManagedRestaurantFormType>(
+          ['managed-restaurant'],
+          {
+            ...cached, // Mantém os dados antigos
+            name, // Atualiza o cache com o nome
+            description, // Atualiza o cache com a descrição
+          }
+        )
+      }
+    },
   })
 
   async function handleSubmitForm(data: StoreProfileSchema) {
