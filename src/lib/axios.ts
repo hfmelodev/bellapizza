@@ -6,7 +6,7 @@ export const API = axios.create({
   withCredentials: true,
 })
 
-if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+if (['development', 'test'].includes(env.VITE_NODE_ENV)) {
   // Adiciona um delay de 2 segundos antes de cada requisição
   API.interceptors.request.use(async config => {
     await new Promise(resolve => setTimeout(resolve, 2000))

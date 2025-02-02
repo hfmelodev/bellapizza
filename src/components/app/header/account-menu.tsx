@@ -9,24 +9,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useQuery } from '@tanstack/react-query'
 import { Building, ChevronDown, LogOut } from 'lucide-react'
 
 export function AccountMenu() {
-  // Busca os dados do usuário
-  const { data: profile } = useQuery({
+  // Busca da API os dados do usuário
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
   })
 
-  const { data: managedRestaurant } = useQuery({
-    queryKey: ['managed-restaurant'],
-    queryFn: getManagedRestaurant,
-  })
-
-  if (!profile || !managedRestaurant) {
-    return null
-  }
+  // Busca da API os dados da loja
+  const { data: managedRestaurant, isLoading: isLoadingManagedRestaurant } =
+    useQuery({
+      queryKey: ['managed-restaurant'],
+      queryFn: getManagedRestaurant,
+    })
 
   return (
     <DropdownMenu>
@@ -35,17 +34,30 @@ export function AccountMenu() {
           variant="outline"
           className="flex select-none items-center gap-2"
         >
-          {managedRestaurant.name}
+          {isLoadingManagedRestaurant ? (
+            <Skeleton className="h-4 w-40" />
+          ) : (
+            managedRestaurant?.name
+          )}
           <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
-          <span>{profile.name}</span>
-          <span className="text-xs font-normal text-muted-foreground">
-            {profile.email}
-          </span>
+          {isLoadingProfile ? (
+            <div className="space-y-1.5">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+          ) : (
+            <>
+              <span className="text-sm font-semibold">{profile?.name}</span>
+              <span className="text-xs text-muted-foreground">
+                {profile?.email}
+              </span>
+            </>
+          )}
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
