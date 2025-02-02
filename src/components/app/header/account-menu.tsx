@@ -1,5 +1,6 @@
 import { getManagedRestaurant } from '@/api/get-managed-restaurant'
 import { getProfile } from '@/api/get-profile'
+import { signOut } from '@/api/sign-out'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -11,8 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useQuery } from '@tanstack/react-query'
-import { Building, ChevronDown, LogOut } from 'lucide-react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { Building, ChevronDown, Loader2, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { StoreProfileDialog } from './store-profile-dialog'
 
 export function AccountMenu() {
@@ -30,6 +32,14 @@ export function AccountMenu() {
       queryFn: getManagedRestaurant,
       staleTime: Number.POSITIVE_INFINITY, // Nunca expira os dados da loja
     })
+
+  const navigate = useNavigate()
+  const { mutateAsync: signOutFn, isPending: isSigningOut } = useMutation({
+    mutationFn: signOut,
+    onSuccess: () => {
+      navigate('/sign-in', { replace: true }) // Redireciona para a tela de login e proible a navegação de volta
+    },
+  })
 
   return (
     <Dialog>
@@ -75,14 +85,29 @@ export function AccountMenu() {
             </DropdownMenuItem>
           </DialogTrigger>
 
-          <DropdownMenuItem className="text-rose-500 dark:text-rose-400 cursor-pointer">
-            <LogOut className="size-4" />
-            <span>Sair</span>
+          <DropdownMenuItem
+            className="text-rose-500 dark:text-rose-400 cursor-pointer"
+            disabled={isSigningOut}
+            onClick={() => signOutFn()}
+            onSelect={event => {
+              event.preventDefault()
+              signOutFn()
+            }}
+          >
+            {isSigningOut ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                <span>Encerrando sessão...</span>
+              </>
+            ) : (
+              <>
+                <LogOut className="size-4" />
+                <span>Sair</span>
+              </>
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* FIXME: Componente que faz aparecer o dialog de perfil da loja  */}
       <StoreProfileDialog />
     </Dialog>
   )
