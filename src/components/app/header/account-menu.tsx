@@ -1,5 +1,6 @@
-import { Building, ChevronDown, LogOut } from 'lucide-react'
-import { Button } from '../ui/button'
+import { getManagedRestaurant } from '@/api/get-managed-restaurant'
+import { getProfile } from '@/api/get-profile'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,9 +8,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
+import { useQuery } from '@tanstack/react-query'
+import { Building, ChevronDown, LogOut } from 'lucide-react'
 
 export function AccountMenu() {
+  // Busca os dados do usuário
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: getProfile,
+  })
+
+  const { data: managedRestaurant } = useQuery({
+    queryKey: ['managed-restaurant'],
+    queryFn: getManagedRestaurant,
+  })
+
+  if (!profile || !managedRestaurant) {
+    return null
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -17,16 +35,16 @@ export function AccountMenu() {
           variant="outline"
           className="flex select-none items-center gap-2"
         >
-          BellaPizza
+          {managedRestaurant.name}
           <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
-          <span>Hilquias Ferreira Melo</span>
+          <span>{profile.name}</span>
           <span className="text-xs font-normal text-muted-foreground">
-            hilquiasfmelo@gmail.com
+            {profile.email}
           </span>
         </DropdownMenuLabel>
 

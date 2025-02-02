@@ -3,6 +3,7 @@ import axios from 'axios'
 
 export const API = axios.create({
   baseURL: env.VITE_API_URL,
+  withCredentials: true,
 })
 
 if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {

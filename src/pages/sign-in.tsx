@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMutation } from '@tanstack/react-query'
+import { LoaderPinwheel } from 'lucide-react'
 
 const signInFormSchema = z.object({
   email: z.string().email({
@@ -26,7 +27,7 @@ export function SignIn() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignInFormType>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -84,8 +85,19 @@ export function SignIn() {
               )}
             </div>
 
-            <Button className="w-full font-bold" type="submit">
-              Acessar painel
+            <Button
+              className="w-full flex items-center font-bold"
+              type="submit"
+              disabled={!isSubmitting}
+            >
+              {!isSubmitting ? (
+                <>
+                  <LoaderPinwheel className="animate-spin" /> Verificando seus
+                  dados...
+                </>
+              ) : (
+                'Acessar painel'
+              )}
             </Button>
           </form>
         </div>
