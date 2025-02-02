@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -20,12 +20,19 @@ const signInFormSchema = z.object({
 type SignInFormType = z.infer<typeof signInFormSchema>
 
 export function SignIn() {
+  // Recuperando o e-mail fornecido na URL
+  const [searchParams] = useSearchParams()
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInFormType>({
     resolver: zodResolver(signInFormSchema),
+    defaultValues: {
+      // Definindo o valor inicial do campo de email caso ele seja fornecido na URL
+      email: searchParams.get('email') || '',
+    },
   })
 
   const { mutateAsync: authenticate } = useMutation({

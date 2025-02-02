@@ -1,13 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { registerRestaurant } from '@/api/register-restaurant'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Link } from 'react-router'
+import { useMutation } from '@tanstack/react-query'
+import { LoaderPinwheel } from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
+import { toast } from 'sonner'
 
 const signUpFormSchema = z.object({
   restaurantName: z.string().min(1, {
@@ -27,17 +30,38 @@ const signUpFormSchema = z.object({
 type SignUpFormType = z.infer<typeof signUpFormSchema>
 
 export function SignUp() {
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormType>({
     resolver: zodResolver(signUpFormSchema),
   })
 
-  function handleSubmitForm(data: SignUpFormType) {
-    console.log(data)
-    toast.success('Login realizado com sucesso!')
+  const { mutateAsync: registerRestaurantFn } = useMutation({
+    mutationFn: registerRestaurant,
+  })
+
+  async function handleSignUp(data: SignUpFormType) {
+    try {
+      await registerRestaurantFn({
+        restaurantName: data.restaurantName,
+        managerName: data.managerName,
+        email: data.email,
+        phone: data.phone,
+      })
+
+      toast.success('Restaurante cadastrado com sucesso!')
+
+      // Redireciona para a tela de login com o e-mail do restaurante como parâmetro na URL
+      await navigate(`/sign-in?email=${data.email}`)
+    } catch (err) {
+      toast.error('Algo deu errado, tente novamente.')
+
+      console.error(err)
+    }
   }
 
   return (
@@ -60,7 +84,7 @@ export function SignUp() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
+          <form onSubmit={handleSubmit(handleSignUp)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="restaurantName">Nome de estabelecimento</Label>
               <Input id="restaurantName" {...register('restaurantName')} />
@@ -101,8 +125,19 @@ export function SignUp() {
               )}
             </div>
 
-            <Button className="w-full font-bold" type="submit">
-              Finalizar cadastro
+            <Button
+              className="w-full flex items-center font-bold"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <LoaderPinwheel className="animate-spin" /> Criando sua
+                  conta...
+                </>
+              ) : (
+                'Finalizar cadastro'
+              )}
             </Button>
 
             <p className="px-6 text-center text-sm leading-relaxed text-muted-foreground">
