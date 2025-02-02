@@ -88,9 +88,9 @@ export function SignIn() {
             <Button
               className="w-full flex items-center font-bold"
               type="submit"
-              disabled={!isSubmitting}
+              disabled={isSubmitting}
             >
-              {!isSubmitting ? (
+              {isSubmitting ? (
                 <>
                   <LoaderPinwheel className="animate-spin" /> Verificando seus
                   dados...
