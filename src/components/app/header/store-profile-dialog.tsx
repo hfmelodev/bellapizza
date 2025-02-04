@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { LoaderPinwheel } from 'lucide-react'
+import { RefreshCcw } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -141,10 +141,12 @@ export function StoreProfileDialog() {
           >
             {isSubmitting ? (
               <>
-                <LoaderPinwheel className="animate-spin" /> Atualizando dados...
+                <RefreshCcw className="animate-spin" /> Atualizando dados...
               </>
             ) : (
-              'Atualizar'
+              <>
+                <RefreshCcw className="size-4" /> Atualizar
+              </>
             )}
           </Button>
         </DialogFooter>

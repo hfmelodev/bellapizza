@@ -108,6 +108,8 @@ export function AccountMenu() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* FIXME: Dialog de perfil da loja */}
       <StoreProfileDialog />
     </Dialog>
   )
