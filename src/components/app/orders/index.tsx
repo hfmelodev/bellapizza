@@ -18,6 +18,11 @@ export function Orders() {
   // Hook que permite alterar os parâmetros da URL
   const [searchParams, setSearchParams] = useSearchParams()
 
+  // Verificando se já existe algum filtro na URL
+  const orderId = searchParams.get('orderId')
+  const customerName = searchParams.get('customerName')
+  const status = searchParams.get('status')
+
   // FIXME: Aplica a validação e transformação ao valor extraído da URL.
   const pageIndex = z.coerce
     .number() // Converte o valor obtido para um número, mesmo que seja uma string.
@@ -26,8 +31,14 @@ export function Orders() {
 
   const { data: result } = useQuery({
     // Toda vez que a função depender de um parâmetro, esse parametro deve ser passado no array de dependências da queryKey
-    queryKey: ['orders', pageIndex],
-    queryFn: () => getOrders({ pageIndex }),
+    queryKey: ['orders', pageIndex, orderId, customerName, status],
+    queryFn: () =>
+      getOrders({
+        pageIndex,
+        orderId,
+        customerName,
+        status: status === 'all' ? null : status,
+      }),
   })
 
   async function handlePaginate(pageIndex: number) {
