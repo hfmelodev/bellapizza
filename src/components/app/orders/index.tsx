@@ -8,15 +8,36 @@ import {
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
+import { useSearchParams } from 'react-router'
+import { z } from 'zod'
 import { OrderTableFilter } from './order-table-filter'
 import { OrderTableRow } from './order-table-row'
 import { Pagination } from './pagination'
 
 export function Orders() {
+  // Hook que permite alterar os parâmetros da URL
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // FIXME: Aplica a validação e transformação ao valor extraído da URL.
+  const pageIndex = z.coerce
+    .number() // Converte o valor obtido para um número, mesmo que seja uma string.
+    .transform(page => page - 1) // Transforma o número para um índice baseado em zero (ex: página 1 → índice 0).
+    .parse(searchParams.get('page') ?? '1') // Obtém o parâmetro 'page' da URL; se não existir, usa '1' como padrão.
+
   const { data: result } = useQuery({
-    queryKey: ['orders'],
-    queryFn: getOrders,
+    // Toda vez que a função depender de um parâmetro, esse parametro deve ser passado no array de dependências da queryKey
+    queryKey: ['orders', pageIndex],
+    queryFn: () => getOrders({ pageIndex }),
   })
+
+  async function handlePaginate(pageIndex: number) {
+    setSearchParams(state => {
+      state.set('page', String(pageIndex + 1))
+
+      return state
+    })
+  }
+
   return (
     <>
       <Helmet title="Pedidos" />
@@ -52,8 +73,15 @@ export function Orders() {
             </Table>
           </div>
 
-          {/* FIXME: Componente de paginação de pedidos */}
-          <Pagination pageIndex={0} perPage={10} totalCount={100} />
+          {result && (
+            //FIXME: Componente de paginação de pedidos
+            <Pagination
+              onPageChange={handlePaginate}
+              pageIndex={result.meta.pageIndex}
+              perPage={result.meta.perPage}
+              totalCount={result.meta.totalCount}
+            />
+          )}
         </div>
       </div>
     </>
