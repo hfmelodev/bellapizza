@@ -10,6 +10,7 @@ import type { GetOrdersFormType } from '@/api/get-orders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useState } from 'react'
 
 interface OrderTableRowProps {
   order: {
@@ -22,22 +23,28 @@ interface OrderTableRowProps {
 }
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
+  // Controlando o detalhe do pedido aberto ou fechado
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
   const queryClient = useQueryClient()
+  // Cancelando o pedido e atualizando o cache
   const { mutateAsync: cancelOrderFn } = useMutation({
     mutationFn: cancelOrder,
     async onSuccess(_, { orderId }) {
+      // Busca os dados que estavam no cache antes da atualização
       const ordersListCache = queryClient.getQueriesData<GetOrdersFormType>({
         queryKey: ['orders'],
       })
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      ordersListCache.forEach(([cacheKey, cacheData]) => {
+      // Atualiza o cache da query "orders"
+      ordersListCache.map(([cacheKey, cacheData]) => {
         if (!cacheData) {
           return
         }
-
+        // Atualiza o cache com o pedido cancelado
         queryClient.setQueryData<GetOrdersFormType>(cacheKey, {
           ...cacheData,
+          // Atualiza o status do pedido cancelado
           orders: cacheData.orders.map(order => {
             if (order.orderId === orderId) {
               return { ...order, status: 'canceled' }
@@ -53,7 +60,7 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
   return (
     <TableRow>
       <TableCell>
-        <Dialog>
+        <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="xs">
               <Search className="size-3" />
@@ -61,8 +68,8 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
             </Button>
           </DialogTrigger>
 
-          {/* Componente de detalhes do pedido */}
-          <OrderDetails />
+          {/* FIXME: Componente de detalhes do pedido */}
+          <OrderDetails orderId={order.orderId} open={isDetailOpen} />
         </Dialog>
       </TableCell>
 
